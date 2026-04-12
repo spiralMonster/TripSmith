@@ -1,12 +1,12 @@
 from langchain_core.prompts import ChatPromptTemplate
-from agents.query_checker.utils.is_query_valid_specs import IsQueryValidSpecs
+from agents.query_checker.utils.query_validator_specs import QueryValidatorSpecs
 
 
-def IsQueryValid(state):
+def QueryValidator(state):
     query=state["query"]
 
     model=state["model"]
-    model=model.with_structured_output(IsQueryValidSpecs)
+    model=model.with_structured_output(QueryValidatorSpecs)
 
     template="""
     You are provided with a query.

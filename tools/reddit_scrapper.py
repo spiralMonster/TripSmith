@@ -1,4 +1,5 @@
 import time
+from langchain_core.tools import tool
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -19,15 +20,22 @@ options.add_argument("user-data-dir=/home/spiralmonster/.config/google-chrome/se
 driver=webdriver.Chrome(options=options)
 wait=WebDriverWait(driver,15)
 
-
-def scrape_from_reddit(query:str)->dict:
+@tool
+def scrape_from_reddit(query:str,num_articles_to_scrape:int)->dict:
+    """
+    Scrapes the articles from Reddit based upon the user query.
+    Args:
+        query (str): The user query
+        num_articles_to_scrape (int): The number of articles to scrape.
+    Returns:
+        dict: The scrapped articles.
+    """
     query=query.split(" ")
     query="+".join(query)
 
     search_query=f"https://www.google.com/search?q={query}"
 
     try:
-
 
         driver.get(search_query)
 
@@ -79,10 +87,12 @@ def scrape_from_reddit(query:str)->dict:
                 )
 
                 for p in posts:
-                    articles.append(p.text)
+                    text=p.text
+                    if text:
+                        articles.append(text)
 
-
-
+                    if len(articles)==num_articles_to_scrape:
+                        break
 
 
                 tool_response={
@@ -120,7 +130,7 @@ def scrape_from_reddit(query:str)->dict:
 
 
 if __name__=="__main__":
-    query="best time to visit egypt"
+    query="when is the best time to visit italy"
     tool_response=scrape_from_reddit(query)
 
     if tool_response["tool_success"]:

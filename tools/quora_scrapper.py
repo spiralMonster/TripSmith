@@ -1,4 +1,5 @@
 import time
+from langchain_core.tools import tool
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -18,7 +19,16 @@ driver=webdriver.Chrome(options=options)
 wait=WebDriverWait(driver,timeout=15)
 
 
-def scrape_from_quora(query:str)->dict:
+@tool
+def scrape_from_quora(query:str,num_articles_to_scrape:int)->dict:
+    """
+    Scrapes the articles from Quora based upon the user query.
+    Args:
+        query (str): The user query
+        num_articles_to_scrape (int): The number of articles to scrape.
+    Returns:
+        dict: The scrapped articles.
+    """
     query=query.split(" ")
     query="+".join(query)
 
@@ -106,6 +116,9 @@ def scrape_from_quora(query:str)->dict:
                             else:
                                 articles.append(text)
 
+                    if len(articles)==num_articles_to_scrape:
+                        break
+
                     ind+=1
 
 
@@ -151,7 +164,7 @@ def scrape_from_quora(query:str)->dict:
 
 
 if __name__=="__main__":
-    query="best time to visit Italy"
+    query="when is the best time to visit Italy"
     tool_response=scrape_from_quora(query)
 
     if tool_response["tool_success"]:
