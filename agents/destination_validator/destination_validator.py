@@ -1,15 +1,21 @@
+import os
+
 from langchain_core.messages import SystemMessage,HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
-from urllib3.contrib.emscripten import response
 
 from tools.quora_scrapper import scrape_from_quora
 from tools.reddit_scrapper import scrape_from_reddit
 from tools.news_scrappper import scrape_news_articles
 
-from agents.query_checker.utils.destination_validator_specs import DestinationValidatorSpecs
+from get_llm_model import GetLLM
+from agents.destination_validator.utils.destination_validator_specs import DestinationValidatorSpecs
 
-def DestinationValidator(state):
-    llm=state["model"]
+
+def DestinationValidator(destination:str)->dict:
+    llm=GetLLM(
+        service_provider=os.environ["DEFAULT_SERVICE_PROVIDER"],
+        temperature=os.environ["DEFAULT_TEMPERATURE"]
+    )
 
     tools=[scrape_from_quora,scrape_from_reddit,scrape_news_articles]
 
@@ -20,7 +26,6 @@ def DestinationValidator(state):
     }
     llm_with_tools=llm.bind_tools(tools)
 
-    destination=state["destination"]
 
     messages=[
         SystemMessage(
@@ -71,9 +76,27 @@ def DestinationValidator(state):
         }
     )
 
+    right_time_to_visit=response.right_time_to_visit
+    explanation=response.explanation
+
+    if right_time_to_visit=="Yes":
+        agent_remark=f"It is a right time to visit {destination}."
+
+
+    else:
+        agent_remark=f"""
+        It is not right time to visit {destination}.
+        Provide user with appropriate explanation regarding why it is not right time to visit {destination}.
+        Ask user to either change the destination or to suggest some destination spots.
+        """
+
     result={
-        "right_time_to_visit":response.right_time_to_visit,
-        "explanation":response.explanation
+        "agent_name":"Destination Validator",
+        "agent_response":{
+            "is_it_right_time_to_visit_destination":right_time_to_visit,
+            "explanation":explanation,
+            "agent_remark":agent_remark
+        }
     }
 
     return result
