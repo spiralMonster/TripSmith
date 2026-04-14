@@ -1,4 +1,8 @@
 .idea/
 .venv/
 .env
+__pycache__/
+agents/information_gatherer/__pycache__/
+agents/information_scrutinizer/__pycache__/
+tools/__pycache__/
 

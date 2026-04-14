@@ -7,17 +7,6 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
-options=Options()
-options.add_argument("--headless")
-options.add_argument("--disable-gpu")
-options.add_argument("--disable-blink-features=AutomationControlled")
-options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36")
-options.add_argument("user-data-dir=/home/spiralmonster/.config/google-chrome/selenium-profile")
-
-driver=webdriver.Chrome(options=options)
-
-wait=WebDriverWait(driver,timeout=15)
-
 
 @tool
 def scrape_from_quora(query:str,num_articles_to_scrape:int)->dict:
@@ -29,6 +18,16 @@ def scrape_from_quora(query:str,num_articles_to_scrape:int)->dict:
     Returns:
         dict: The scrapped articles.
     """
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36")
+    options.add_argument("user-data-dir=/home/spiralmonster/.config/google-chrome/selenium-profile")
+
+    driver = webdriver.Chrome(options=options)
+    wait = WebDriverWait(driver, timeout=15)
+
     query=query.split(" ")
     query="+".join(query)
 

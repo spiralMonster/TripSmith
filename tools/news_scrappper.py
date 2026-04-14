@@ -7,18 +7,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-options=Options()
-options.add_argument("--headless")
-options.add_argument("--disable-gpu")
-options.add_argument("--disable-blink-features=AutomationControlled")
-options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36")
-options.add_argument("user-data-dir=/home/spiralmonster/.config/google-chrome/selenium-profile")
-
-
-driver=webdriver.Chrome(options=options)
-
-wait=WebDriverWait(driver,timeout=15)
-
 def scrape_pages(driver):
     driver.execute_script("window.scrollTo(0,document.body.scrollHeight);")
     time.sleep(2)
@@ -59,6 +47,17 @@ def scrape_news_articles(query:str,num_articles_to_scrape:int)->dict:
         dict: The scrapped news articles.
 
     """
+
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36")
+    options.add_argument("user-data-dir=/home/spiralmonster/.config/google-chrome/selenium-profile")
+
+    driver = webdriver.Chrome(options=options)
+    wait = WebDriverWait(driver, timeout=15)
+
     query=query.split(" ")
     query="+".join(query)
 
